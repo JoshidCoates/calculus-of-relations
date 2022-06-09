@@ -1,3 +1,5 @@
+package traditional;
+
 public class Pair<T> {
 
     private T first;

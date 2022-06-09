@@ -1,12 +1,13 @@
+package traditional;
+
+import matrix.MRelation;
+
 import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Relation<T> {
 
-    // todo add checks for same universal set for methods that take
-    //  in another relation
-    // todo maybe generate the identity for the universal set for each
-    //  relation (depends of usage of methods that require it)
     // todo maybe think about extracting some operations (e.g. conjugated
     //  quasi-projections) to a separate service class
 
@@ -16,6 +17,29 @@ public class Relation<T> {
     public Relation(RSet<T> universalSet, RSet<Pair<T>> pairs) {
         this.universalSet = universalSet;
         this.pairs = pairs;
+    }
+
+    public Relation(MRelation<T> relation) {
+        List<T> universalSet = relation.getUniversalSet();
+        this.universalSet = new RSet<>(relation.getUniversalSet());
+        boolean[][] matrix = relation.getMatrix();
+        HashSet<Pair<T>> elements = new HashSet<>();
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                if (matrix[i][j]) {
+                    elements.add(new Pair<>(universalSet.get(i), universalSet.get(j)));
+                }
+            }
+        }
+        this.pairs = new RSet<>(elements);
+    }
+
+    public RSet<T> getUniversalSet() {
+        return universalSet;
+    }
+
+    public RSet<Pair<T>> getPairs() {
+        return pairs;
     }
 
     /**
@@ -128,7 +152,7 @@ public class Relation<T> {
     /**
      * R = S
      * @param otherRelation S
-     * @return R = S
+     * @return self = S
      */
     public boolean isEqual(Relation<T> otherRelation) throws UnmatchedUniversalSetsException {
         if (!universalSet.equals(otherRelation.universalSet)) throw new UnmatchedUniversalSetsException();
@@ -274,7 +298,7 @@ public class Relation<T> {
      */
     public boolean conjugatedQuasiProjection(Relation<T> otherRelation) throws UnmatchedUniversalSetsException {
         if (!universalSet.equals(otherRelation.universalSet)) throw new UnmatchedUniversalSetsException();
-        return isFunction() && otherRelation.isFunction() && converse().composition(otherRelation).pairs.equals(universalSet.universalRelation().pairs);
+        return isFunction() && otherRelation.isFunction() && converse().composition(otherRelation).isEqual(universalSet.universalRelation());
     }
 
 }

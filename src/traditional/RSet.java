@@ -1,3 +1,7 @@
+package traditional;
+
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -13,8 +17,25 @@ public class RSet<T> {
         this.elements = elements;
     }
 
+    public RSet(Collection<T> elements) {
+        this.elements = new HashSet<>(elements);
+    }
+
+    public RSet(T[] elements) {
+        this.elements = new HashSet<>(Arrays.asList(elements));
+    }
+
+
+    public RSet() {
+        this.elements = new HashSet<>();
+    }
+
     public HashSet<T> getElements() {
         return elements;
+    }
+
+    public int size() {
+        return elements.size();
     }
 
     /**
@@ -48,13 +69,6 @@ public class RSet<T> {
     }
 
     /**
-     * @return ∅
-     */
-    private static <E> RSet<E> emptySet() {
-        return new RSet<>(new HashSet<>());
-    }
-
-    /**
      * idU = {(α, β) : α, β ∈ U and α = β}
      * @return idU
      */
@@ -72,13 +86,9 @@ public class RSet<T> {
      * @return ∅
      */
     public Relation<T> emptyRelation() {
-        try {
-            Relation<T> identity = identityRelation();
-            return identity.complement().union(identity).complement();
-        } catch (UnmatchedUniversalSetsException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new Relation<>(this, new RSet<>());
+        // traditional.Relation<T> identity = identityRelation();
+        // return identity.complement().union(identity).complement();
     }
 
     /**
